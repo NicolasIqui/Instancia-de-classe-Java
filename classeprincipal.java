@@ -1,4 +1,4 @@
-package teste;
+package InstanciaDeClasseCidade;
 
 import javax.swing.JOptionPane;
 
@@ -29,16 +29,14 @@ public class classeprincipal {
             metodos.consultaCidadeacidente(cidade);
             } else if (opcao == 3) {
 
-                System.out.println(
-                    "Opção 3 ainda não implementada."
-                );
+                metodos.bubbleSortCidade(cidade);
 
             } else if (opcao == 4) {
+                metodos.consultaCidadeMedia(cidade);
+            } else if (opcao == 5) {
+            metodos.consultaCidadeacidenteteste(cidade);
 
-                System.out.println(
-                    "Opção 4 ainda não implementada."
-                );
-
+            
             } else if (opcao == 9) {
 
                 JOptionPane.showMessageDialog(null,
