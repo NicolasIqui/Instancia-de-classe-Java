@@ -1,11 +1,14 @@
 package InstanciaDeClasseCidade;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 
 public class classeprincipal {
 
-     public static void main(String[] args) {
-
+     public static void main(String[] args) throws IOException{
+        new FileWriter("Arquivo.txt", false).close();
         Cidade[] cidade = new Cidade[3];
         classemetodo metodos = new classemetodo();
         for (int i = 0; i < 3; i++) {
