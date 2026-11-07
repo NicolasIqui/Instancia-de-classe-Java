@@ -1,0 +1,746 @@
+mysql> TEE C:\Users\FATEC ZONA LESTE\Desktop/EMPRESA.txt
+mysql> SOURCE C:\Users\FATEC ZONA LESTE\Desktop/EMPRESA.txt
+ERROR: 
+Unknown command '\U'.
+ERROR: 
+Unknown command '\F'.
+ERROR: 
+Unknown command '\D'.
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'mysql> TEE C:\Users\FATEC ZONA LESTE\Desktop/EMPRESA.txt' at line 1
+mysql> SOURCE C:\Users\FATEC ZONA LESTE\Desktop/EMPRESA.sql
+Query OK, 1 row affected (0.04 sec)
+
+Database changed
+Query OK, 0 rows affected (0.04 sec)
+
+Query OK, 0 rows affected (0.07 sec)
+
+Query OK, 0 rows affected (0.04 sec)
+
+Query OK, 0 rows affected (0.05 sec)
+
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+Query OK, 5 rows affected (0.12 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
++--------+---------+
+| DEPTNO | DNOME   |
++--------+---------+
+|      1 | VENDAS  |
+|      2 | COMPRAS |
+|      3 | RH      |
++--------+---------+
+3 rows in set (0.00 sec)
+
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
++-------+-----------+---------+------------+-------------+--------+
+5 rows in set (0.00 sec)
+
++-------+-----------+
+| EMPNO | EFONE     |
++-------+-----------+
+|     1 | 44430000  |
+|     1 | 997766554 |
+|     3 | 44430000  |
+|     3 | 987654321 |
+|     5 | 912345678 |
++-------+-----------+
+5 rows in set (0.00 sec)
+
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> describe gerente
+    -> ;
++-------+--------------+------+-----+---------+----------------+
+| Field | Type         | Null | Key | Default | Extra          |
++-------+--------------+------+-----+---------+----------------+
+| EMPNO | int          | NO   | PRI | NULL    | auto_increment |
+| ENOME | varchar(40)  | YES  |     | NULL    |                |
+| ESAL  | decimal(6,2) | YES  |     | NULL    |                |
++-------+--------------+------+-----+---------+----------------+
+3 rows in set (0.04 sec)
+
+mysql> INSERT INTO gerente (select empno,enome, esal from emp WHERE efuncao = 'Gerente');
+ERROR 1062 (23000): Duplicate entry '3' for key 'gerente.PRIMARY'
+mysql> select * from gerente;
++-------+-----------+---------+
+| EMPNO | ENOME     | ESAL    |
++-------+-----------+---------+
+|     3 | VALTER    | 6000.00 |
+|     4 | ADALBERTO | 4000.00 |
++-------+-----------+---------+
+2 rows in set (0.00 sec)
+
+mysql> describe deptno
+    -> ;
+ERROR 1146 (42S02): Table 'empresa.deptno' doesn't exist
+mysql> describe depto
+    -> ;
++--------+-------------+------+-----+---------+----------------+
+| Field  | Type        | Null | Key | Default | Extra          |
++--------+-------------+------+-----+---------+----------------+
+| DEPTNO | int         | NO   | PRI | NULL    | auto_increment |
+| DNOME  | varchar(20) | NO   |     | NULL    |                |
++--------+-------------+------+-----+---------+----------------+
+2 rows in set (0.05 sec)
+
+mysql> describe empno;
+ERROR 1146 (42S02): Table 'empresa.empno' doesn't exist
+mysql> describe emp
+    -> ;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| EMPNO   | int          | NO   | PRI | NULL    | auto_increment |
+| ENOME   | varchar(40)  | NO   |     | NULL    |                |
+| ESAL    | decimal(6,2) | NO   |     | NULL    |                |
+| EDATADM | date         | YES  |     | NULL    |                |
+| EFUNCAO | char(12)     | NO   |     | NULL    |                |
+| DEPTNO  | int          | YES  | MUL | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> select dnome;
+ERROR 1054 (42S22): Unknown column 'dnome' in 'field list'
+mysql> select dnome from depto;
++---------+
+| dnome   |
++---------+
+| VENDAS  |
+| COMPRAS |
+| RH      |
++---------+
+3 rows in set (0.00 sec)
+
+mysql> select dnome where deptno not in (select distinct deptno from emp);
+ERROR 1054 (42S22): Unknown column 'dnome' in 'field list'
+mysql> select dnome from depto where deptno not in (select distinct deptno from emp);
++--------+
+| dnome  |
++--------+
+| VENDAS |
++--------+
+1 row in set (0.00 sec)
+
+mysql> select dnome from depto where deptno not in (select  deptno from emp);
++--------+
+| dnome  |
++--------+
+| VENDAS |
++--------+
+1 row in set (0.00 sec)
+
+mysql> select dnome from depto where deptno not in (select  deptno from emp);
++--------+
+| dnome  |
++--------+
+| VENDAS |
++--------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp where esal=(select max(esal) from emp);
++-------+--------+---------+------------+---------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO | DEPTNO |
++-------+--------+---------+------------+---------+--------+
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE |      3 |
++-------+--------+---------+------------+---------+--------+
+1 row in set (0.02 sec)
+
+mysql> select enome,efuncao where esal=(select min(esal) from emp);
+ERROR 1054 (42S22): Unknown column 'enome' in 'field list'
+mysql> select enome,efuncao from emp  where esal=(select min(esal) from emp);
++--------+-------------+
+| enome  | efuncao     |
++--------+-------------+
+| MANUEL | PROGRAMADOR |
++--------+-------------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp where esal<(select avg(esal)from emp);
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
++-------+-----------+---------+------------+-------------+--------+
+3 rows in set (0.01 sec)
+
+mysql> select avg(esal)from emp;
++-------------+
+| avg(esal)   |
++-------------+
+| 4460.000000 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp where esal<(select avg(esal)from emp);
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
++-------+-----------+---------+------------+-------------+--------+
+3 rows in set (0.00 sec)
+
+mysql> 	select * from emp where esal>(select esal from emp where efuncao like 'gerente');
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select esal from emp where efuncao like 'gerente
+    '> ;
+    '> ;
+    '> ^C
+mysql> select esal from emp where efuncao like 'gerente';
++---------+
+| esal    |
++---------+
+| 6000.00 |
+| 4000.00 |
++---------+
+2 rows in set (0.00 sec)
+
+mysql> 	select * from emp where esal>(select max (esal) from emp where efuncao like 'gerente');
+ERROR 1630 (42000): FUNCTION empresa.max does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual
+mysql> select * from emp where esal>(select max (esal) from emp where efuncao like 'gerente');
+ERROR 1630 (42000): FUNCTION empresa.max does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual
+mysql> select * from emp where esal>(select max(esal) from emp where efuncao like 'gerente');
+Empty set (0.00 sec)
+
+mysql> select * from emp
+    -> ;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
++-------+-----------+---------+------------+-------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select avg(esal) from emp group by depto;
+ERROR 1054 (42S22): Unknown column 'depto' in 'group statement'
+mysql> select avg(esal) from emp group by enome;
++-------------+
+| avg(esal)   |
++-------------+
+| 5000.000000 |
+| 3500.000000 |
+| 6000.000000 |
+| 4000.000000 |
+| 3800.000000 |
++-------------+
+5 rows in set (0.03 sec)
+
+mysql> select avg(esal) from emp group by deptno;
++-------------+
+| avg(esal)   |
++-------------+
+| 4166.666667 |
+| 4900.000000 |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from emp where esal=(select maxd
+    -> ad
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 2
+mysql> select avg(esal) from emp;
++-------------+
+| avg(esal)   |
++-------------+
+| 4460.000000 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select avg(esal) from emp; 
++-------------+
+| avg(esal)   |
++-------------+
+| 4460.000000 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select avg(esal) from emp group by deptno;
++-------------+
+| avg(esal)   |
++-------------+
+| 4166.666667 |
+| 4900.000000 |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp where esal>(select avg(esal)from emp grou by deptno);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'by deptno)' at line 1
+mysql> select  * from emp where esal>(select avg(esal)from emp group by deptno);
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select  * from emp where esal>(select avg(esal)from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp )group by deptno;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.02 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp GROUP)group by deptno;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')group by deptno' at line 1
+mysql> select  * from emp  where esal>(select avg(esal)from emp GROUP BY deptno)group by deptno;
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> 
+mysql> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES
+    -> 
+    -> ('TESTE',4200,'2019-05-28','ANALISTA',2),
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 3
+mysql> 
+mysql> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES
+    -> ('TESTE',4200,'2019-05-28','ANALISTA',2),
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 2
+mysql> DESCRIBE emp.
+    -> ^C
+mysql> DESCRIBE emp;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| EMPNO   | int          | NO   | PRI | NULL    | auto_increment |
+| ENOME   | varchar(40)  | NO   |     | NULL    |                |
+| ESAL    | decimal(6,2) | NO   |     | NULL    |                |
+| EDATADM | date         | YES  |     | NULL    |                |
+| EFUNCAO | char(12)     | NO   |     | NULL    |                |
+| DEPTNO  | int          | YES  | MUL | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from emp
+    -> ;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
++-------+-----------+---------+------------+-------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp where emp.deptno = depto.deptono)group by deptno;
+ERROR 1054 (42S22): Unknown column 'depto.deptono' in 'where clause'
+mysql> select  * from emp  where esal>(select avg(esal)from emp where emp.deptno = depto.deptno)group by deptno;
+ERROR 1054 (42S22): Unknown column 'depto.deptno' in 'where clause'
+mysql> select  * from emp  where esal>(select avg(esal)from emp where emp.deptno = DEPTO.DEPTNO )group by deptno;
+ERROR 1054 (42S22): Unknown column 'DEPTO.DEPTNO' in 'where clause'
+mysql> describe depto
+    -> 
+    -> ;
++--------+-------------+------+-----+---------+----------------+
+| Field  | Type        | Null | Key | Default | Extra          |
++--------+-------------+------+-----+---------+----------------+
+| DEPTNO | int         | NO   | PRI | NULL    | auto_increment |
+| DNOME  | varchar(20) | NO   |     | NULL    |                |
++--------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp where (emp.deptno = DEPTO.DEPTNO) )group by deptno;
+ERROR 1054 (42S22): Unknown column 'DEPTO.DEPTNO' in 'where clause'
+mysql> select  * from emp  where esal>(select avg(esal)from emp,depto where emp.deptno = DEPTO.DEPTNO )group by deptno;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> 
+mysql> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES('TESTE',4200,'2019-05-28','ANALISTA',2);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp,depto where emp.deptno = DEPTO.DEPTNO )group by deptno;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp,depto where emp.deptno = DEPTO.DEPTNO )
+    -> ;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal) );
+Empty set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal) from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select avg(esal) from emp;
++-------------+
+| avg(esal)   |
++-------------+
+| 4416.666667 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
+|     6 | TESTE     | 4200.00 | 2019-05-28 | ANALISTA    |      2 |
++-------+-----------+---------+------------+-------------+--------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES('TESTE4',4500,'2019-05-28','ANALISTA',2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal) from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     7 | TESTE4 | 4500.00 | 2019-05-28 | ANALISTA |      2 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp,depto where emp.deptno = DEPTO.DEPTNO )
+    -> ;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     7 | TESTE4 | 4500.00 | 2019-05-28 | ANALISTA |      2 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     7 | TESTE4 | 4500.00 | 2019-05-28 | ANALISTA |      2 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp )group by depto;
+ERROR 1054 (42S22): Unknown column 'depto' in 'group statement'
+mysql> select  * from emp  where esal>(select avg(esal)from emp )group by deptono;
+ERROR 1054 (42S22): Unknown column 'deptono' in 'group statement'
+mysql> select  * from emp  where esal>(select avg(esal)from emp )group by deptno;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp )g;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'g' at line 1
+mysql> select  * from emp  where esal>(select avg(esal)from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     7 | TESTE4 | 4500.00 | 2019-05-28 | ANALISTA |      2 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp )group by deptno;
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
++-------+--------+---------+------------+----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> select  * from emp  where esal>(select avg(esal)from emp );
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     7 | TESTE4 | 4500.00 | 2019-05-28 | ANALISTA |      2 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select * from tb emp where empno in (select distinct from FONES_EMP);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from FONES_EMP)' at line 1
+mysql> select * from tb emp where empno in (select distinct from FONES_EMP);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from FONES_EMP)' at line 1
+mysql> select * from  emp where empno in (select distinct from FONES_EMP);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from FONES_EMP)' at line 1
+mysql> describe fones_emp;
++-------+----------+------+-----+---------+-------+
+| Field | Type     | Null | Key | Default | Extra |
++-------+----------+------+-----+---------+-------+
+| EMPNO | int      | NO   | PRI | NULL    |       |
+| EFONE | char(12) | NO   | PRI | NULL    |       |
++-------+----------+------+-----+---------+-------+
+2 rows in set (0.02 sec)
+
+mysql> select * from  emp where empno in (select  from FONES_EMP);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from FONES_EMP)' at line 1
+mysql> select * from  emp where empno in (select distinc empno from FONES_EMP);
+ERROR 1054 (42S22): Unknown column 'distinc' in 'field list'
+mysql> select * from  emp where empno in (select DISTINCT empno from FONES_EMP);
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.02 sec)
+
+mysql> select * from  emp where empno in (select  empno from FONES_EMP);
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select * from  emp where empno in (select  empno from FONES_EMP);
++-------+--------+---------+------------+----------+--------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO |
++-------+--------+---------+------------+----------+--------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |
++-------+--------+---------+------------+----------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select *a from emp
+    -> ^C
+mysql> select * from fones_emp;
++-------+-----------+
+| EMPNO | EFONE     |
++-------+-----------+
+|     1 | 44430000  |
+|     1 | 997766554 |
+|     3 | 44430000  |
+|     3 | 987654321 |
+|     5 | 912345678 |
++-------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from emp;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
+|     6 | TESTE     | 4200.00 | 2019-05-28 | ANALISTA    |      2 |
+|     7 | TESTE4    | 4500.00 | 2019-05-28 | ANALISTA    |      2 |
++-------+-----------+---------+------------+-------------+--------+
+7 rows in set (0.00 sec)
+
+mysql> select *,efone from emp inner join fone_emp on emp.empno=fone_emp.empno;
+ERROR 1146 (42S02): Table 'empresa.fone_emp' doesn't exist
+mysql> select *,efone from emp inner join fone_emp on emp.empno=fones_emp.empno;
+ERROR 1146 (42S02): Table 'empresa.fone_emp' doesn't exist
+mysql> select *,efone from emp inner join fone_emp on emp.empno=fones_emp.empno;
+ERROR 1146 (42S02): Table 'empresa.fone_emp' doesn't exist
+mysql> select *,efone from emp inner join fones_emp on emp.empno=fones_emp.empno;
++-------+--------+---------+------------+----------+--------+-------+-----------+-----------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO | EMPNO | EFONE     | efone     |
++-------+--------+---------+------------+----------+--------+-------+-----------+-----------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 44430000  | 44430000  |
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 997766554 | 997766554 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 44430000  | 44430000  |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 987654321 | 987654321 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |     5 | 912345678 | 912345678 |
++-------+--------+---------+------------+----------+--------+-------+-----------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from emp inner join fones_emp on emp.empno=fones_emp.empno;
++-------+--------+---------+------------+----------+--------+-------+-----------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO | EMPNO | EFONE     |
++-------+--------+---------+------------+----------+--------+-------+-----------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 44430000  |
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 997766554 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 44430000  |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 987654321 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |     5 | 912345678 |
++-------+--------+---------+------------+----------+--------+-------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> select *	 from emp inner join fones_emp on emp.empno=fones_emp.empno;
++-------+--------+---------+------------+----------+--------+-------+-----------+
+| EMPNO | ENOME  | ESAL    | EDATADM    | EFUNCAO  | DEPTNO | EMPNO | EFONE     |
++-------+--------+---------+------------+----------+--------+-------+-----------+
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 44430000  |
+|     1 | RENATO | 5000.00 | 2019-05-28 | ANALISTA |      2 |     1 | 997766554 |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 44430000  |
+|     3 | VALTER | 6000.00 | 2000-07-08 | GERENTE  |      3 |     3 | 987654321 |
+|     5 | JULIO  | 3800.00 | 2018-01-28 | ANALISTA |      3 |     5 | 912345678 |
++-------+--------+---------+------------+----------+--------+-------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> update emp set esal=esal+300 where efuncao like 'RH';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+mysql> SELECT * FROM EMP;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
+|     6 | TESTE     | 4200.00 | 2019-05-28 | ANALISTA    |      2 |
+|     7 | TESTE4    | 4500.00 | 2019-05-28 | ANALISTA    |      2 |
++-------+-----------+---------+------------+-------------+--------+
+7 rows in set (0.00 sec)
+
+mysql> INSERT INTO DEPTO (DNOME) VALUES('RH');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> ('testeq143',4500,'2018-01-28','PROGRAMADOR',2),
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''testeq143',4500,'2018-01-28','PROGRAMADOR',2),' at line 1
+mysql> ('testeq143',4500,'2018-01-28','PROGRAMADOR',2)
+    -> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES('TESTE4444',4200,'2019-05-28','ANALISTA',4)
+    -> 
+    -> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES('TESTE4444',4200,'2019-05-28','ANALISTA',4)C;SAD;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''testeq143',4500,'2018-01-28','PROGRAMADOR',2)
+INSERT INTO EMP (ENOME, ESAL,EDAT' at line 1
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SAD' at line 1
+mysql> ^C
+mysql> 
+mysql> INSERT INTO EMP (ENOME, ESAL,EDATADM, EFUNCAO, DEPTNO) VALUES('TESTE4444',4200,'2019-05-28','ANALISTA',4);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM EMP
+    -> .;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 2
+mysql> SELECT * FROM EMP ;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6000.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 3800.00 | 2018-01-28 | ANALISTA    |      3 |
+|     6 | TESTE     | 4200.00 | 2019-05-28 | ANALISTA    |      2 |
+|     7 | TESTE4    | 4500.00 | 2019-05-28 | ANALISTA    |      2 |
+|     8 | TESTE4444 | 4200.00 | 2019-05-28 | ANALISTA    |      4 |
++-------+-----------+---------+------------+-------------+--------+
+8 rows in set (0.00 sec)
+
+mysql> update emp set esal=esal+300 where efuncao like 'RH';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+mysql> update emp set esal=esal+300 where deptno(select deptno from depto where dnome='rh');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'select deptno from depto where dnome='rh')' at line 1
+mysql> update emp set esal=esal+300 where deptno	x(select deptno from depto where dnome='rh');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'x(select deptno from depto where dnome='rh')' at line 1
+mysql> 
+mysql> update emp set esal=esal+300 where deptno in(select deptno from depto where dnome='rh');
+Query OK, 3 rows affected (0.03 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select * from emp;
++-------+-----------+---------+------------+-------------+--------+
+| EMPNO | ENOME     | ESAL    | EDATADM    | EFUNCAO     | DEPTNO |
++-------+-----------+---------+------------+-------------+--------+
+|     1 | RENATO    | 5000.00 | 2019-05-28 | ANALISTA    |      2 |
+|     2 | MANUEL    | 3500.00 | 2018-01-28 | PROGRAMADOR |      2 |
+|     3 | VALTER    | 6300.00 | 2000-07-08 | GERENTE     |      3 |
+|     4 | ADALBERTO | 4000.00 | 2000-05-02 | GERENTE     |      2 |
+|     5 | JULIO     | 4100.00 | 2018-01-28 | ANALISTA    |      3 |
+|     6 | TESTE     | 4200.00 | 2019-05-28 | ANALISTA    |      2 |
+|     7 | TESTE4    | 4500.00 | 2019-05-28 | ANALISTA    |      2 |
+|     8 | TESTE4444 | 4500.00 | 2019-05-28 | ANALISTA    |      4 |
++-------+-----------+---------+------------+-------------+--------+
+8 rows in set (0.00 sec)
+
+mysql> 
+mysql> select * depto;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'depto' at line 1
+mysql> select * from depto
+    -> ;
++--------+---------+
+| DEPTNO | DNOME   |
++--------+---------+
+|      1 | VENDAS  |
+|      2 | COMPRAS |
+|      3 | RH      |
+|      4 | RH      |
++--------+---------+
+4 rows in set (0.00 sec)
+
+mysql> UPDATE emp SET esal = esal + 300 WHERE deptno = (    SELECT deptno     FROM depto     WHERE dnome = 'rh');
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> delete  depto where deptno=4;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'where deptno=4' at line 1
+mysql> delete  from depto where deptno=4;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`empresa`.`emp`, CONSTRAINT `emp_ibfk_1` FOREIGN KEY (`DEPTNO`) REFERENCES `depto` (`DEPTNO`))
+mysql> delete from emp where empno=8;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> delete  from depto where deptno=4;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> UPDATE emp SET esal = esal + 300 WHERE deptno = (    SELECT deptno     FROM depto     WHERE dnome = 'rh');
+Query OK, 2 rows affected (0.01 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> Terminal close -- exit!
