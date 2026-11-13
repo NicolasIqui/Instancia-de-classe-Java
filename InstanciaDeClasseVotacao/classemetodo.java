@@ -6,17 +6,31 @@ public class classemetodo {
     public Votacao[] Fcadastravotacao(Votacao[] votacao) {
         int[]totalVotosCandidato=new int [300];
         int[]totalPorsecao=new int[10];
+        int[]eleitoressecao=new int[10];
         for (int i = 0; i < 5; i++) {
             votacao[i].numeroSecao = random.nextInt(11);
             votacao[i].numCandidato = random.nextInt(301);
 
         int candidatoSorteado = votacao[i].numCandidato;
+        int quantsecaoeleitores=votacao[i].numeroSecao;
+        eleitoressecao[quantsecaoeleitores]++;
         totalVotosCandidato[candidatoSorteado]++;
         int quantSecao=votacao[i].numeroSecao;
         totalPorsecao[quantSecao]++;
         }
         return votacao;
     }
+    public void secaoMaiormenor(Votacao[] votacao){
+        int maiorSecaoEleitores=0;
+        int menorSecaoEleitores=0;
+        for(int i=0;i<5;i++){
+            if(i==0){
+             maiorSecaoEleitores=votacao[i].eleitoressecao[i];
+            }
+        }
+    }
+
+
 
     public String FClassificasecao(Votacao[] votacao) {
         Votacao v;
